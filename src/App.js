@@ -5,7 +5,7 @@ import axios from 'axios';
 import Select from "react-select";
 import InputComp from './components/InputComp';
 import TableComp from './components/TableComp';
-import { Tag } from "antd";
+import { Tag,Button } from "antd";
 
 const url = "https://62e6bd340e5d74566aebd18b.mockapi.io/api/v1/products";
 
@@ -46,6 +46,7 @@ function App() {
   const [availOption, setAvailOption] = useState([]);
   const [selectedColors, setSelectedColor] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState([]);
+  const [pagesize, setPagesize] = useState(10);
   useEffect(() => {
     axios
       .get(url)
@@ -91,7 +92,13 @@ function App() {
     const arr = data.filter((el) => sta.includes(el.availability));
     setFilterData(arr);
   };
-
+  const handlePageSize = () => {
+    if (pagesize === 10) {
+      setPagesize(pagesize + 10);
+    } else if (pagesize === 20) {
+      setPagesize(pagesize - 10);
+    }
+  };
   return (
     <section className='App'>
     <div className="header">
@@ -118,7 +125,18 @@ function App() {
     <div>
         <TableComp columns={columns} data={selectedStatus.length > 0
         ||selectedColors.length > 0 ||
-        (search.length > 3 && filterData) ? filterData: products} />
+        (search.length > 3 && filterData) ? filterData: products} pagesize={pagesize}/>
+        <div className="button">
+          {(products.length > 0 || filterData.length > 0) && (
+            <Button type="primary" onClick={handlePageSize}>
+              {pagesize === 10
+                ? "Load More"
+                : pagesize === 20
+                ? "Show Less"
+                : ""}
+            </Button>
+          )}
+        </div>
       </div>
     </section>
   );
